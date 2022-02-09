@@ -16,7 +16,7 @@ final class APIOperation {
     
     
     
-    public  func getTopNews(completion: @escaping (Result<[String], Error>) -> Void) {
+    public  func getTopNews(completion: @escaping (Result<[Article], Error>) -> Void) {
         
         
         guard let url = ConstantInfos.topHeadlinesURL else {
@@ -36,6 +36,7 @@ final class APIOperation {
                     let result = try JSONDecoder().decode(APIResponse.self, from: data)
 
                     print("Article arr : \(result.articles.count)")
+                    completion(.success(result.articles))
                     
                  } catch {
                      completion(.failure(error))

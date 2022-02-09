@@ -1,9 +1,3 @@
-//
-//  ViewController.swift
-//  OnlineNewsPaper
-//
-//  Created by ugur-pc on 9.02.2022.
-//
 
 import UIKit
 
@@ -13,10 +7,20 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     // tableView register
     private let tableView : UITableView = {
         let table = UITableView()
-        table.register(UITableViewCell.self, forCellReuseIdentifier: "mycell")
+        
+        
+        // custom tableViewCell register.
+        table.register(NewsCustomTableViewCell.self,
+                       forCellReuseIdentifier: NewsCustomTableViewCell.identifier)
+        
+        
         
         return table
     }()
+    
+    
+    private var viewModels = [NewsCustomTableViewCellViewModel]()
+    
     
     
     override func viewDidLoad() {
@@ -27,16 +31,28 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         title = "Online Newspaper"
         view.backgroundColor = .systemBackground
+        view.addSubview(tableView)
         print("wqeqweqw")
         
         
         // API DATAS
-        APIOperation.shared.getTopNews { result in
+        APIOperation.shared.getTopNews { [weak self] result in
             
             switch result {
                 
-                case .success(let response):
-                    break
+                case .success(let articles):
+                self?.viewModels = articles.compactMap({
+                    NewsCustomTableViewCellViewModel(
+                        title: $0.title,
+                        subtitle: $0.description ?? "-",
+                        imageURL: URL(string: $0.urlToImage ?? "")
+                    )
+                })
+                
+                
+                DispatchQueue.main.async {
+                    self?.tableView.reloadData()
+                }
                 
                 case .failure(let error) :
                     print(error)
@@ -60,16 +76,24 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     // numberOfRowsInSection
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 2
+        return viewModels.count
     }
     
     
     // cellForRowAt
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "mycell",
-                                                 for : indexPath)
+       
+        guard let cell = tableView.dequeueReusableCell(
+            
+            withIdentifier: NewsCustomTableViewCell.identifier,
+            for : indexPath
+            
+        ) as? NewsCustomTableViewCell else {
+            fatalError()
+        }
+     
+        cell.configure(with: viewModels[indexPath.row])
         
-        cell.textLabel?.text = "Test"
         return cell
     }
     
@@ -77,6 +101,13 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     // didSelectRowAt
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+    }
+    
+    
+    
+    // heightForRowAt
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 150
     }
 
 }
