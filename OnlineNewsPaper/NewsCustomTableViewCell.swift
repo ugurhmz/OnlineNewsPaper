@@ -9,12 +9,14 @@ class NewsCustomTableViewCellViewModel {
     let subtitle : String
     let imageURL : URL?
     var imageData: Data? = nil
+    var publishedAt : String?
     
     
-    init(title: String, subtitle : String,  imageURL : URL?) {
+    init(title: String, subtitle : String,  imageURL : URL?, publishedAt : String?) {
         self.title = title
         self.subtitle  = subtitle
         self.imageURL = imageURL
+        self.publishedAt = publishedAt
         
     }
     
@@ -61,6 +63,17 @@ class NewsCustomTableViewCell: UITableViewCell {
     }()
     
     
+    // publishedAtLabel
+    private let publishedAtLabel : UILabel = {
+       
+        let publishedAt = UILabel()
+        publishedAt.font = .systemFont(ofSize : 10, weight: .regular)
+        publishedAt.textColor = .brown
+        
+        return publishedAt
+        
+    }()
+    
     
     
     
@@ -70,6 +83,7 @@ class NewsCustomTableViewCell: UITableViewCell {
         contentView.addSubview(newsTitleLabel)
         contentView.addSubview(subtitleLabel)
         contentView.addSubview(newsImgView)
+        contentView.addSubview(publishedAtLabel)
     }
     
     
@@ -93,6 +107,13 @@ class NewsCustomTableViewCell: UITableViewCell {
                                      width: contentView.frame.size.width - 170,
                                      height: contentView.frame.size.height/2
         )
+        
+        publishedAtLabel.frame = CGRect(x:105,
+                                     y: 108,
+                                     width: contentView.frame.size.width - 170,
+                                     height: contentView.frame.size.height/2
+        )
+        
         
         newsImgView.frame = CGRect(x: contentView.frame.size.width - 150,
                                    y: 5,
@@ -119,7 +140,7 @@ class NewsCustomTableViewCell: UITableViewCell {
     func configure(with viewModel: NewsCustomTableViewCellViewModel ){
         newsTitleLabel.text = viewModel.title
         subtitleLabel.text = viewModel.subtitle
-        
+        publishedAtLabel.text = viewModel.publishedAt
         
         // Image
         if let data = viewModel.imageData {

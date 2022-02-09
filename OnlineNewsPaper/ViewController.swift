@@ -45,7 +45,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                     NewsCustomTableViewCellViewModel(
                         title: $0.title,
                         subtitle: $0.description ?? "-",
-                        imageURL: URL(string: $0.urlToImage ?? "")
+                        imageURL: URL(string: $0.urlToImage ?? ""),
+                        publishedAt: $0.publishedAt ?? "-"
                     )
                 })
                 
@@ -101,6 +102,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     // didSelectRowAt
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+        let viewModel = viewModels[indexPath.row]
     }
     
     
