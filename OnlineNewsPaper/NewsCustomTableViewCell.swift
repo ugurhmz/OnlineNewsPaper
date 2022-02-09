@@ -53,6 +53,7 @@ class NewsCustomTableViewCell: UITableViewCell {
     // imageView
     private let newsImgView : UIImageView = {
         let imageView = UIImageView()
+        imageView.clipsToBounds = true
         imageView.backgroundColor = .systemGray2
         imageView.contentMode = .scaleAspectFill
         
@@ -106,6 +107,9 @@ class NewsCustomTableViewCell: UITableViewCell {
     
     override func prepareForReuse(){
         super.prepareForReuse()
+        newsTitleLabel.text = nil
+        subtitleLabel.text = nil
+        newsImgView.image = nil
     }
     
     
