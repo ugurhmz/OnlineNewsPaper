@@ -1,5 +1,4 @@
 
-
 import UIKit
 
 
@@ -20,7 +19,6 @@ class NewsCustomTableViewCellViewModel {
         
     }
     
-    
 }
 
 
@@ -35,7 +33,7 @@ class NewsCustomTableViewCell: UITableViewCell {
     private let newsTitleLabel : UILabel = {
         let label = UILabel()
         label.numberOfLines = 0
-        label.font = .systemFont(ofSize: 25, weight: .medium)
+        label.font = .systemFont(ofSize: 23, weight: .semibold)
         
         return label
     }()
@@ -45,7 +43,7 @@ class NewsCustomTableViewCell: UITableViewCell {
     private let subtitleLabel : UILabel = {
         let label = UILabel()
         label.numberOfLines = 0
-        label.font = .systemFont(ofSize : 18, weight: .regular)
+        label.font = .systemFont(ofSize : 17, weight: .light)
         
         return label
     }()
@@ -56,6 +54,8 @@ class NewsCustomTableViewCell: UITableViewCell {
     private let newsImgView : UIImageView = {
         let imageView = UIImageView()
         imageView.clipsToBounds = true
+        imageView.layer.cornerRadius = 8
+        imageView.layer.masksToBounds = true
         imageView.backgroundColor = .systemGray2
         imageView.contentMode = .scaleAspectFill
         
@@ -96,6 +96,11 @@ class NewsCustomTableViewCell: UITableViewCell {
     override func layoutSubviews() {
         super.layoutSubviews()
         
+        
+        let margins = UIEdgeInsets(top: 3, left: 8, bottom: 5, right: 8)
+        contentView.frame = contentView.frame.inset(by: margins)
+       
+        
         newsTitleLabel.frame = CGRect(x: 10,
                                       y: 0,
                                       width: contentView.frame.size.width - 170,
@@ -117,7 +122,7 @@ class NewsCustomTableViewCell: UITableViewCell {
         
         newsImgView.frame = CGRect(x: contentView.frame.size.width - 150,
                                    y: 5,
-                                   width: 160,
+                                   width: 145,
                                    height: contentView.frame.size.height - 10
         )
         

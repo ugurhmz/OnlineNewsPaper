@@ -1,8 +1,12 @@
 
 import UIKit
+import SafariServices
+
 
 class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
+    private var viewModels = [NewsCustomTableViewCellViewModel]()
+    private var articles = [Article]()
     
     // tableView register
     private let tableView : UITableView = {
@@ -17,9 +21,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         return table
     }()
-    
-    
-    private var viewModels = [NewsCustomTableViewCellViewModel]()
     
     
     
@@ -41,19 +42,21 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             switch result {
                 
                 case .success(let articles):
-                self?.viewModels = articles.compactMap({
-                    NewsCustomTableViewCellViewModel(
-                        title: $0.title,
-                        subtitle: $0.description ?? "-",
-                        imageURL: URL(string: $0.urlToImage ?? ""),
-                        publishedAt: $0.publishedAt ?? "-"
-                    )
-                })
-                
-                
-                DispatchQueue.main.async {
-                    self?.tableView.reloadData()
-                }
+                    
+                    self?.articles = articles
+                    self?.viewModels = articles.compactMap({
+                        NewsCustomTableViewCellViewModel(
+                            title: $0.title,
+                            subtitle: $0.description ?? "-",
+                            imageURL: URL(string: $0.urlToImage ?? ""),
+                            publishedAt: $0.publishedAt ?? "-"
+                        )
+                    })
+                    
+                    
+                    DispatchQueue.main.async {
+                        self?.tableView.reloadData()
+                    }
                 
                 case .failure(let error) :
                     print(error)
@@ -94,6 +97,9 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         }
      
         cell.configure(with: viewModels[indexPath.row])
+        cell.layer.borderColor = UIColor.black.cgColor
+        cell.layer.borderWidth = 0.2
+       
         
         return cell
     }
@@ -102,7 +108,17 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     // didSelectRowAt
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        let viewModel = viewModels[indexPath.row]
+        let article = articles[indexPath.row]
+        print("my : ", article)
+        
+        guard let url = URL(string: article.url ?? "") else {
+            return
+        }
+        
+        // seçince o URL git.
+        let vc = SFSafariViewController(url: url)
+        present(vc, animated: true)
+        
     }
     
     
@@ -112,5 +128,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         return 160
     }
 
+    
+    
 }
 

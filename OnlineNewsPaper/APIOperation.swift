@@ -6,9 +6,13 @@ import Foundation
 
 final class APIOperation {
     static let  shared = APIOperation() // Singleton
+    static let company = "apple"
+    static let pageSize = "70"
+
+    static let myUrl = "https://newsapi.org/v2/everything?q=\(company)&from=2022-02-08&to=2022-02-08&sortBy=popularity&pageSize=\(pageSize)&apiKey=be74c7f94ab24622b6cb92cfe66c6542"
     
     struct ConstantInfos {
-        static let topHeadlinesURL = URL(string:"https://newsapi.org/v2/top-headlines?country=tr&apiKey=be74c7f94ab24622b6cb92cfe66c6542")
+        static let topHeadlinesURL = URL(string: myUrl)
     }
     
     
