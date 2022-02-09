@@ -3,10 +3,14 @@ import UIKit
 import SafariServices
 
 
-class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
 
     private var viewModels = [NewsCustomTableViewCellViewModel]()
     private var articles = [Article]()
+    private let searchVC = UISearchController(searchResultsController: nil)
+    
+    
+    
     
     // tableView register
     private let tableView : UITableView = {
@@ -35,8 +39,29 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         view.addSubview(tableView)
         print("wqeqweqw")
         
-        
-        // API DATAS
+        fetchDatas()
+        createSearchBar()
+    }
+
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        tableView.frame = view.bounds
+    }
+    
+    
+    // Create Searchbar
+    private func createSearchBar(){
+        navigationItem.searchController = searchVC
+        searchVC.searchBar.delegate = self
+    }
+    
+    
+    
+    
+    // API DATAS
+    private func fetchDatas(){
+    
         APIOperation.shared.getTopNews { [weak self] result in
             
             switch result {
@@ -64,14 +89,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             }
         }
     }
-
-    
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        tableView.frame = view.bounds
-    }
-    
-    
     
     
     
@@ -128,6 +145,50 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         return 160
     }
 
+    
+    
+    // searchBarBtnClicked
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        
+        guard let text = searchBar.text, !text.isEmpty else {
+            return
+        }
+        
+        APIOperation.shared.search(with: text) { [weak self] result in
+            
+            switch result {
+            case .success(let articles):
+                self?.articles = articles
+                self?.viewModels = articles.compactMap({
+                    NewsCustomTableViewCellViewModel(title : $0.title,
+                                                     subtitle: $0.description ?? "-",
+                                                     imageURL: URL(string: $0.urlToImage ?? ""),
+                                                     publishedAt: $0.publishedAt ?? "-"
+                    )
+                })
+                
+                DispatchQueue.main.async {
+                    self?.tableView.reloadData()
+                    self?.searchVC.dismiss(animated: true, completion: nil)
+                }
+                
+            case .failure(let error):
+                print(error)
+            }
+            
+        }
+        
+        
+        
+        
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchText.isEmpty {
+            fetchDatas()
+        }
+       
+    }
     
     
 }
